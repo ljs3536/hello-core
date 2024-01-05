@@ -270,7 +270,7 @@ RateDiscountPolicy를 구현함으로써 새로운 할인 정책을 적용 할 �
 - appConfig 객체는 memoryMemberRepository 객체를 생성하고 그 참조값을 memberServiceImpl을 생성하면서 생성자로 전달한다
 - 클라이언트인 memberServiceImpl 입장에서 보면 의존관계를 마치 외부에서 주입해주는 것 같다고 해서 DI(Dependency Injection) 우리말로 의존관계 주입 또는 의존성 주입이라 한다
 
-# "정리"
+## "정리"
 - AppConfig를 통해서 관심사를 확실하게 분리했다
 - 배역, 배우를 생각해보자
 - AppConfig는 공연 기획자다
@@ -278,4 +278,20 @@ RateDiscountPolicy를 구현함으로써 새로운 할인 정책을 적용 할 �
 - 이제 각 배우들은 담당 기능을 실행하는 책임만 지면 된다.
 - OrderServiceImpl은 기능을 실행하는 책임만 지면 된다.
 
+## AppConfig리펙터링
+현재 AppConfig를 보면 "중복"이 있고, "역할"에 따른 "구현"이 잘 안보인다.
+new MemoryMemberRepository() 이 부분의 중복이 제거되었다.
+이제 MemoryMemberRepository를 다른 구현체로 변경할 때 한 부분만 변경하하면 된다.
+AppConfig를 보면 역할과 구현 클래스가 한눈에 들어온다. 애플리케이션 전체 구성이 어떻게 되어있는지 빠르게 파악할 수 있다.
+
+## 새로운 구조와 할인 정책 적용
+- 처음으로 돌아가서 정액 할인 정책을 정률% 할인 정책으로 변경해보자
+- FixDiscountPolicy -> RateDiscountPolicy
+- 어떤 부분만 변경하면 되는가?
+
+"AppCOnfig의 등장으로 애플리케이션이 크게 사용 영역과, 객체를 생성하고 구성(Configuration)하는 영역으로 분리되었다."
+
+- AppConfig에서 할인 정책 역할을 담당하는 구현을 FixDiscountPolicy -> RateDiscountPolicy 객체로 변경했다.
+- 이제 할인 정책을 변경해도, 애플리케이션의 구성 역할을 담당하는 AppConfig만 변경하면 된다. 클라이언트 코드인 OrderServiceImpl을 포함해서 "사용영역"의 어떤 코드도 변경할 필요가 없다
+- "구성 영역"은 당연히 변경된다. 구성 역할을 담당하는 AppConfig를 애플리케이션이라는 공연의 기획자로 생각하자. 공연 기획자는 공연 참여자인 구현 객체들을 모두 알아야한다.
 
